@@ -1,7 +1,7 @@
 {
-  "id": "com.example.my_mod",
-  "name": "My Mod",
-  "version": "1.0.0",
-  "author": "You",
-  "description": "An example Dusklight mod"
+  "id": "com.ssm24.swimming_n_stuff",
+  "name": "Swimming n' Stuff'",
+  "version": "0.1.0",
+  "author": "SSM24",
+  "description": "A mod where I put basically whatever I feel like, including ports of my various Gecko codes."
 }
