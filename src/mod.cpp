@@ -8,6 +8,7 @@
 #include "f_op/f_op_actor_mng.h"
 #include "d/actor/d_a_alink.h"
 #include "m_Do/m_Do_controller_pad.h"
+#include "types.h"
 
 
 DEFINE_MOD();
@@ -35,9 +36,9 @@ IMPORT_SERVICE(HookService, svc_hook);
 
 static const float swimAccel = 1.0f;
 static const float maxSinkSpeed = -10.0f;
-static const float pitchAccel = 1500.0f;
-static const float pitchMax = 9000.0f;
-static const float pitchMin = -9000.0f;
+static const s16 pitchAccel = 1500;
+static const s16 pitchMax = 9000;
+static const s16 pitchMin = -6000;
 
 // TODO: consider replace hooking daAlink_c::procWolfSwimWait and daAlink_c::procWolfSwimMove instead
 // probably some more you can do there
@@ -65,9 +66,11 @@ static void UpdateWolfLinkSwimming() {
     else if (sinking) {
         player->offNoResetFlg0(daAlink_c::FLG0_SWIM_UP);  // surface flag
         player->speed.y = std::max(player->speed.y - swimAccel, maxSinkSpeed);
-        player->shape_angle.x = std::min(player->shape_angle.x + pitchAccel, pitchMax);
+        player->shape_angle.x += pitchAccel;
+        player->shape_angle.x = std::min(player->shape_angle.x, pitchMax);
         if (player->mProcID == daAlink_c::PROC_WOLF_SWIM_WAIT) {
-            player->field_0x3124.x = std::min(player->field_0x3124.x + pitchAccel, pitchMax);  // field_0x3124 is head rotation
+            player->field_0x3124.x += pitchAccel;  // field_0x3124 is head rotation
+            player->field_0x3124.x = std::min(player->field_0x3124.x, pitchMax);
         }
     }
     else if (rising) {
@@ -75,9 +78,11 @@ static void UpdateWolfLinkSwimming() {
         // no need to cap speed, already done by the game
 
         if (!player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) { // if underwater
-            player->shape_angle.x = std::max(player->shape_angle.x - pitchAccel, pitchMin);
+            player->shape_angle.x -= pitchAccel;
+            player->shape_angle.x = std::max(player->shape_angle.x, pitchMin);
             if (player->mProcID == daAlink_c::PROC_WOLF_SWIM_WAIT) {
-                player->field_0x3124.x = std::max(player->field_0x3124.x - pitchAccel, pitchMin);
+                player->field_0x3124.x -= pitchAccel;
+                player->field_0x3124.x = std::max(player->field_0x3124.x, pitchMin);
             }
         }
     }
