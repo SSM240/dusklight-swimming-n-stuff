@@ -1,0 +1,1 @@
+xcopy "%~dp0\out\build\x64-Debug\mods\swimming_n_stuff.dusk" "E:\FDrive\Program Files\Dusklight\mods" /y
