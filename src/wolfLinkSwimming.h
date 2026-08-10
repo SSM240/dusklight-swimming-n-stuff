@@ -17,7 +17,7 @@ namespace WolfLinkSwimming {
 
     static const float SWIM_ACCEL = 1.0f;
     static const float MAX_SINK_SPEED = -10.0f;
-    static const float MAX_RISE_SPEED = 10.0f;
+    static const float MAX_RISE_SPEED = 10.0f; // unused, for reference
     static const s16 PITCH_ACCEL = 3000;
     static const s16 PITCH_MAX = 9000;
     static const s16 PITCH_MIN = -6000;

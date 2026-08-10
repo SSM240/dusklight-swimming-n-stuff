@@ -13,6 +13,7 @@
 #include "m_Do/m_Do_controller_pad.h"
 #include "types.h"
 #include "SSystem/SComponent/c_lib.h"
+#include "SSystem/SComponent/c_math.h"
 
 ModResult WolfLinkSwimming::init() {
     ModResult result;
@@ -70,8 +71,10 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
         target = 0;
     }
     else {
-        float adjustedYSpeed = player->speed.y + player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
-        target = cM_atan2s(-adjustedYSpeed, player->speed.absXZ());
+        float targetYSpeed = swimRising ? MAX_RISE_SPEED
+            : swimSinking ? MAX_SINK_SPEED
+            : 0.0f;
+        target = cM_atan2s(-targetYSpeed, player->speed.absXZ());
     }
     
     cLib_addCalcAngleS(&player->shape_angle.x, target, 3, 2000, 500);
@@ -82,6 +85,7 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
     if (false) {  // replace with config check later
+        swimSinking = swimRising = false;
         HookWolfSwimWait::g_orig(player);
         return;
     }
@@ -132,6 +136,7 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
     if (false) {  // replace with config check later
+        swimSinking = swimRising = false;
         HookWolfSwimMove::g_orig(player);
         return;
     }
