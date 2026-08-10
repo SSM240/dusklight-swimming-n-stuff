@@ -1,15 +1,8 @@
-// dusklight includes
 #include "mods/hook.hpp"
 #include "mods/service.hpp"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
 #include "mods/svc/log.hpp"
-// game includes
-#include "f_op/f_op_actor_mng.h"
-#include "d/actor/d_a_alink.h"
-#include "m_Do/m_Do_controller_pad.h"
-#include "types.h"
-// project includes
 #include "wolfLinkSwimming.h"
 
 

@@ -1,6 +1,5 @@
 #pragma once
 
-// dusklight includes
 #include "mods/hook.hpp"
 #include "mods/service.hpp"
 #include "mods/svc/hook.h"
@@ -8,7 +7,6 @@
 #include "mods/svc/log.hpp"
 #include "mods/svc/hook.hpp"
 #include "mods/api.h"
-// game includes
 #include "d/actor/d_a_alink.h"
 #include "types.h"
 

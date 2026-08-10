@@ -1,15 +1,14 @@
 #include "wolfLinkSwimming.h"
-// dusklight includes
+#include <algorithm>
+#include <cmath>
 #include "mods/hook.hpp"
-#include "mods/service.hpp"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
 #include "mods/svc/log.hpp"
 #include "mods/svc/hook.hpp"
 #include "mods/api.h"
-// game includes
-#include "f_op/f_op_actor_mng.h"
 #include "d/actor/d_a_alink.h"
+#include "d/actor/d_a_player.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "types.h"
 
