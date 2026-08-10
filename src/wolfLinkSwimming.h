@@ -11,8 +11,9 @@
 #include "types.h"
 
 namespace WolfLinkSwimming {
-    DEFINE_HOOK(&daAlink_c::procWolfSwimWait, LinkWolfSwimWait);
-    DEFINE_HOOK(&daAlink_c::procWolfSwimMove, LinkWolfSwimMove);
+    DEFINE_HOOK(&daAlink_c::procWolfSwimWait, HookWolfSwimWait);
+    DEFINE_HOOK(&daAlink_c::procWolfSwimMove, HookWolfSwimMove);
+    DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
 
     static const float SWIM_ACCEL = 1.0f;
     static const float MAX_SINK_SPEED = -10.0f;
@@ -24,9 +25,15 @@ namespace WolfLinkSwimming {
     static bool swimSinking;
     static bool swimRising;
 
+    static bool replacedState = false;
+    static u16 oldProcID;
+
     ModResult init();
     void doWolfLinkSwimMovement(daAlink_c* player);
     void doWolfLinkSwimAngle(daAlink_c* player);
+
     void replaceWolfSwimWait(ModContext*, void* args, void* retval, void*);
     void replaceWolfSwimMove(ModContext*, void* args, void* retval, void*);
+    HookAction preWolfFootBgCheck(ModContext*, void* args, void*, void*);
+    void postWolfFootBgCheck(ModContext*, void* args, void*, void*);
 }

@@ -1,4 +1,5 @@
 #include "wolfLinkSwimming.h"
+#include "util.h"
 #include <algorithm>
 #include <cmath>
 #include "mods/hook.hpp"
@@ -11,35 +12,24 @@
 #include "d/actor/d_a_player.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "types.h"
+#include "SSystem/SComponent/c_lib.h"
 
 ModResult WolfLinkSwimming::init() {
     ModResult result;
 
-    mods::log::trace("replace-hooking daAlink_c::procWolfSwimWait...");
-    result = mods::hook_replace<LinkWolfSwimWait>(replaceWolfSwimWait);
-    if (result != MOD_OK) {
-        mods::log::error("failed to install replaceWolfSwimWait");
-        return result;
-    }
-
-    mods::log::trace("replace-hooking daAlink_c::procWolfSwimMove...");
-    result = mods::hook_replace<LinkWolfSwimMove>(replaceWolfSwimMove);
-    if (result != MOD_OK) {
-        mods::log::error("failed to install replaceWolfSwimWait");
-        return result;
-    }
+    REPLACE_HOOK(HookWolfSwimWait, replaceWolfSwimWait);
+    REPLACE_HOOK(HookWolfSwimMove, replaceWolfSwimMove);
+    PRE_HOOK(HookWolfFootBgCheck, preWolfFootBgCheck);
+    POST_HOOK(HookWolfFootBgCheck, postWolfFootBgCheck);
 
     return MOD_OK;
 }
+
 
 void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
 
     bool holdingSinkButton = mDoCPd_c::getHoldB(PAD_1);
     bool holdingRiseButton = mDoCPd_c::getHoldY(PAD_1);
-
-    /*if (player->shape_angle.x != 0) {
-        mods::log::debug("angle: {}", player->shape_angle.x);
-    }*/
 
     swimSinking = swimRising = false;
 
@@ -59,37 +49,42 @@ void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
         swimSinking = true;
         player->offNoResetFlg0(daAlink_c::FLG0_SWIM_UP);  // set player to be underwater
         player->speed.y = std::max(player->speed.y - SWIM_ACCEL, MAX_SINK_SPEED);
-        //player->shape_angle.x += PITCH_ACCEL;
-        //player->shape_angle.x = std::min(player->shape_angle.x, PITCH_MAX);
     }
     else if (holdingRiseButton 
       && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {  // not on surface
         swimRising = true;
         player->speed.y += SWIM_ACCEL;
         // no need to cap speed, already done by the game
-        //player->shape_angle.x -= PITCH_ACCEL;
-        //player->shape_angle.x = std::max(player->shape_angle.x, PITCH_MIN);
     }
 
     // offset regular acceleration (mBuoyancy is const so i can't just change it directly)
-    player->speed.y -= player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
+    if (!player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        player->speed.y -= player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
+    }
 }
 
+
 void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
-    // TODO: figure out better logic for this (or a better place to set it)
-    // something is trying to reset angle.x to 0 but i can't find what
-    player->shape_angle.x = player->speed.atan2sY_XZ();
+    s16 target;
+    if (player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {  // on surface
+        target = 0;
+    }
+    else {
+        float adjustedYSpeed = player->speed.y + player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
+        target = cM_atan2s(-adjustedYSpeed, player->speed.absXZ());
+    }
+    
+    cLib_addCalcAngleS(&player->shape_angle.x, target, 3, 2000, 500);
 }
+
 
 void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
     if (false) {  // replace with config check later
-        LinkWolfSwimWait::g_orig(player);
+        HookWolfSwimWait::g_orig(player);
         return;
     }
-
-    doWolfLinkSwimMovement(player);
 
     // always returns 1 so just set retval here for simplicity
     *static_cast<int*>(retval) = 1;
@@ -121,6 +116,9 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
         }
     }
 
+    // modification: handle custom up/down movement
+    doWolfLinkSwimMovement(player);
+
     // modification: transition to swim move state if swimming up or down
     if (player->checkInputOnR() || swimRising || swimSinking) {
         player->procWolfSwimMoveInit();
@@ -129,17 +127,13 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
     return;
 }
 
+
 void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
     if (false) {  // replace with config check later
-        LinkWolfSwimMove::g_orig(player);
+        HookWolfSwimMove::g_orig(player);
         return;
-    }
-
-    doWolfLinkSwimMovement(player);
-    if (swimSinking || swimRising) {
-        doWolfLinkSwimAngle(player);
     }
 
     // always returns 1 so just set retval here for simplicity
@@ -184,10 +178,36 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
         }
     }
 
+    // modification: handle custom up/down movement
+    doWolfLinkSwimMovement(player);
+    doWolfLinkSwimAngle(player);
+
     // modification: stay in this state if swimming up or down
     if (!player->checkInputOnR() && !player->checkWolfSwimDashAnime() && !swimRising && !swimSinking) {
         player->procWolfSwimWaitInit(0);
     }
 
     return;
+}
+
+// hack: this function is coded not to touch player pitch in PROC_WOLF_CARGO_CARRY
+// so by replacing the proc ID temporarily we can disable this in other states also
+HookAction WolfLinkSwimming::preWolfFootBgCheck(ModContext*, void* args, void*, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+    if (player->mProcID == daAlink_c::PROC_WOLF_SWIM_MOVE
+      && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        replacedState = true;
+        oldProcID = player->mProcID;
+        player->mProcID = daAlink_c::PROC_WOLF_CARGO_CARRY;
+    }
+    return HOOK_CONTINUE;
+}
+
+// restore the proc ID if we changed it in preWolfFootBgCheck
+void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+    if (replacedState) {
+        player->mProcID = oldProcID;
+    }
+    replacedState = false;
 }
