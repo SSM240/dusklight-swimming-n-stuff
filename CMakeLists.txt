@@ -12,7 +12,9 @@ add_subdirectory("${DUSKLIGHT_DIR}/sdk" dusklight-sdk EXCLUDE_FROM_ALL)
 
 add_mod(swimming_n_stuff
         FEATURES game fmt      # remove for service/asset-only mods; add webgpu for GfxService
-        SOURCES src/mod.cpp
+        SOURCES 
+            src/mod.cpp
+            src/wolfLinkSwimming.cpp
         MOD_JSON mod.json
         RES_DIR res            # mod resources, including icon.png and banner.png
         # OVERLAY_DIR overlay    # game file overlays; remove if unused
