@@ -14,7 +14,7 @@
 #include "types.h"
 
 ModResult WolfLinkSwimming::init() {
-	ModResult result;
+    ModResult result;
 
     mods::log::trace("replace-hooking daAlink_c::procWolfSwimWait...");
     result = mods::hook_replace<LinkWolfSwimWait>(replaceWolfSwimWait);
@@ -30,7 +30,7 @@ ModResult WolfLinkSwimming::init() {
         return result;
     }
 
-	return MOD_OK;
+    return MOD_OK;
 }
 
 void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
