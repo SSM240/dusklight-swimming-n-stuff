@@ -23,6 +23,7 @@ static const s16 PITCH_MIN = -6000;
 
 static bool wasLowOnAir;
 
+static bool shouldStayStill;
 static bool swimSinking;
 static bool swimRising;
 

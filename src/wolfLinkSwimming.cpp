@@ -50,9 +50,15 @@ void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
     bool holdingRiseButton = mDoCPd_c::getHoldY(PAD_1);
 
     swimSinking = swimRising = false;
+    
+    // don't try to touch player's speed if they're not trying to dive or swim up
+    // so jumping into water still raises you to the surface
+    if (player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        shouldStayStill = false;
+    }
 
     // stationary
-    if (holdingSinkButton == holdingRiseButton) {
+    if (shouldStayStill && holdingSinkButton == holdingRiseButton) {
         if (std::fabs(player->speed.y) < 1.0f) {  // prevent jittering
             player->speed.y = 0.0f;
         }
@@ -64,19 +70,21 @@ void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
         }
     }
     else if (holdingSinkButton) {
+        shouldStayStill = true;
         swimSinking = true;
         player->offNoResetFlg0(daAlink_c::FLG0_SWIM_UP);  // set player to be underwater
         player->speed.y = std::max(player->speed.y - SWIM_ACCEL, MAX_SINK_SPEED);
     }
     else if (holdingRiseButton 
-      && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {  // not on surface
+      && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        shouldStayStill = true;
         swimRising = true;
         player->speed.y += SWIM_ACCEL;
         // no need to cap speed, already done by the game
     }
 
-    // offset regular acceleration (mBuoyancy is const so i can't just change it directly)
-    if (!player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+    // offset regular acceleration
+    if (shouldStayStill && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
         player->speed.y -= player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
     }
 }
