@@ -9,11 +9,14 @@ if (result != MOD_OK) {                              \
     return result;                                   \
 }
 
-// installs a pre-hook with logging, returns early and logs an error when it fails
+// installs a pre-hook with logging
+// returns early and logs an error when it fails
 #define PRE_HOOK(entry, func) INSTALL_HOOK(entry, func, add_pre)
-// installs a post-hook with logging, returns early and logs an error when it fails
+// installs a post-hook with logging
+// returns early and logs an error when it fails
 #define POST_HOOK(entry, func) INSTALL_HOOK(entry, func, add_post)
-// installs a replace-hook with logging, returns early and logs an error when it fails
+// installs a replace-hook with logging
+// returns early and logs an error when it fails
 #define REPLACE_HOOK(entry, func) INSTALL_HOOK(entry, func, replace)
 
 namespace Util {
