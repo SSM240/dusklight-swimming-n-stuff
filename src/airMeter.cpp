@@ -44,7 +44,7 @@ HookAction AirMeter::preDrawKanteraScreen(ModContext*, void*, void*, void*) {
 
     prevMaxOxygen = dComIfGp_getMaxOxygen();
     // pretend max oxygen is at most 28 secs for this function
-    // so higher values don't make the "low air" sfx play for a super long time
+    // so higher values don't make the "low air" sfx play for a super long time (~14 secs max)
     dComIfGp_setMaxOxygen(std::min(prevMaxOxygen, 840));
     return HOOK_CONTINUE;
 }
