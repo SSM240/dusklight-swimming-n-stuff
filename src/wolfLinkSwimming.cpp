@@ -10,6 +10,7 @@
 #include "mods/api.h"
 #include "d/actor/d_a_alink.h"
 #include "d/actor/d_a_player.h"
+#include "d/d_com_inf_game.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "types.h"
 #include "SSystem/SComponent/c_lib.h"
@@ -22,6 +23,8 @@ ModResult WolfLinkSwimming::init() {
     REPLACE_HOOK(HookWolfSwimMove, replaceWolfSwimMove);
     PRE_HOOK(HookWolfFootBgCheck, preWolfFootBgCheck);
     POST_HOOK(HookWolfFootBgCheck, postWolfFootBgCheck);
+    PRE_HOOK(HookWolfSwimUpInit, preWolfSwimUpInit);
+    REPLACE_HOOK(HookWolfSwimUp, replaceWolfSwimUp);
 
     return MOD_OK;
 }
@@ -238,4 +241,39 @@ void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*
         player->mProcID = oldProcID;
     }
     replacedState = false;
+}
+
+// keep track of whether we're low on air at the moment we surface
+HookAction WolfLinkSwimming::preWolfSwimUpInit(ModContext*, void* args, void*, void*) {
+    float oxygenPercent = (f32)dComIfGp_getOxygen() / (f32)dComIfGp_getMaxOxygen();
+    wasLowOnAir = oxygenPercent < 0.5f;
+    return HOOK_CONTINUE;
+}
+
+void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+
+    if (false) {  // replace with config check later
+        HookWolfSwimWait::g_orig(player);
+        return;
+    }
+
+    daPy_frameCtrl_c* frameCtrl = player->mUnderFrameCtrl;
+    player->setNormalSpeedF(0.0f, player->mpHIO->mWolf.mWlSwim.m.mDeceleration);
+
+    // modification: change animation to be unskippable if low on air
+    float cancelFrame = wasLowOnAir
+        ? 20.0f
+        : player->mpHIO->mWolf.mWlSwim.m.mSurfacingAnm.mCancelFrame;
+    if (player->checkAnmEnd(frameCtrl)) {
+        player->procWolfSwimWaitInit(0);
+    }
+    else if (player->checkInputOnR() && frameCtrl->getFrame() > cancelFrame) {
+        player->procWolfSwimMoveInit();
+    }
+    else {
+        player->current.pos.y = player->mWaterY;
+    }
+
+    *static_cast<int*>(retval) = 1;
 }
