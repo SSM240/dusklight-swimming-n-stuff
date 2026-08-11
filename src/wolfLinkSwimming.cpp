@@ -22,6 +22,7 @@ ModResult WolfLinkSwimming::init() {
     REPLACE_HOOK(HookWolfSwimMove, replaceWolfSwimMove);
     PRE_HOOK(HookWolfFootBgCheck, preWolfFootBgCheck);
     POST_HOOK(HookWolfFootBgCheck, postWolfFootBgCheck);
+    REPLACE_HOOK(HookWolfSwimMoveAnmSpeed, replaceWolfSwimMoveAnmSpeed);
 
     return MOD_OK;
 }
@@ -215,4 +216,41 @@ void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*
         player->mProcID = oldProcID;
     }
     replacedState = false;
+}
+
+
+void WolfLinkSwimming::replaceWolfSwimMoveAnmSpeed(ModContext*, void* args, void* retval, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+
+    if (false) {  // replace with config check later
+        HookWolfSwimMoveAnmSpeed::g_orig(player);
+    }
+
+    f32 result;
+
+    f32 anm_speed = fabsf(player->mNormalSpeed) / player->mMaxSpeed;
+    if (anm_speed > 1.0f) {
+        anm_speed = 1.0f;
+    }
+    // consider moving up/down to be swimming at max speed also
+    if (swimSinking || swimRising) {
+        anm_speed = 1.0f;
+    }
+
+    f32 minSpeed;
+    f32 maxSpeed;
+
+    if (player->checkWolfDashMode()) {
+        minSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMinAnmSpeed;
+        maxSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeed;
+    }
+    else {
+        minSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMinAnmSpeedWeak;
+        maxSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeedWeak;
+    }
+    // todo: mess with these values later
+
+    result = minSpeed + anm_speed * (maxSpeed - minSpeed);
+
+    *static_cast<f32*>(retval) = result;
 }
