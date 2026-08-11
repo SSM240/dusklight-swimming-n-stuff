@@ -154,6 +154,7 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
 
     // modification: handle custom up/down movement
     doWolfLinkSwimMovement(player);
+    doWolfLinkSwimAngle(player);
 
     // modification: transition to swim move state if swimming up or down
     if (player->checkInputOnR() || swimRising || swimSinking) {
@@ -238,7 +239,8 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
 // so by replacing the proc ID temporarily we can disable this in other states also
 HookAction WolfLinkSwimming::preWolfFootBgCheck(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
-    if (player->mProcID == daAlink_c::PROC_WOLF_SWIM_MOVE
+    u16 procID = player->mProcID;
+    if ((procID == daAlink_c::PROC_WOLF_SWIM_MOVE || procID == daAlink_c::PROC_WOLF_SWIM_WAIT)
       && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
         replacedState = true;
         oldProcID = player->mProcID;
