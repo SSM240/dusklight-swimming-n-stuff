@@ -93,6 +93,10 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
             : 0.0f;
         target = cM_atan2s(-targetYSpeed, player->speed.absXZ());
     }
+    // straight up looks slightly odd to me for some reason
+    if (target < -15000) {
+        target = -15000;
+    }
     
     cLib_addCalcAngleS(&player->shape_angle.x, target, 3, 2000, 500);
 }
