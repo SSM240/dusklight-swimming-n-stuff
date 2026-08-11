@@ -10,7 +10,11 @@ namespace Bubbles
 DEFINE_HOOK(&daAlink_c::setEmitterPolyColor, HookSetEmitterPolyColor);
 DEFINE_HOOK(&daAlink_c::setEffect, HookSetEffect);
 
+static int deathTimer = 0;
+static float bubbleFrequency;
+
 ModResult init();
+ModResult update();
 
 HookAction preSetEmitter(ModContext*, void* args, void* retval, void*);
 void postSetEffect(ModContext*, void* args, void* retval, void*);

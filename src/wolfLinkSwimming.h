@@ -11,7 +11,6 @@ namespace WolfLinkSwimming
 DEFINE_HOOK(&daAlink_c::procWolfSwimWait, HookWolfSwimWait);
 DEFINE_HOOK(&daAlink_c::procWolfSwimMove, HookWolfSwimMove);
 DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
-DEFINE_HOOK(&daAlink_c::getWolfSwimMoveAnmSpeed, HookWolfSwimMoveAnmSpeed);
 
 static const float SWIM_ACCEL = 1.0f;
 static const float MAX_SINK_SPEED = -10.0f;
@@ -27,6 +26,7 @@ static bool replacedState = false;
 static u16 oldProcID;
 
 ModResult init();
+float getSwimAnimSpeedMult(daAlink_c* player);
 void doWolfLinkSwimMovement(daAlink_c* player);
 void doWolfLinkSwimAngle(daAlink_c* player);
 

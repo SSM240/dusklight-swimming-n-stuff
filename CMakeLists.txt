@@ -14,6 +14,7 @@ add_mod(swimming_n_stuff
         FEATURES game fmt      # remove for service/asset-only mods; add webgpu for GfxService
         SOURCES 
             src/mod.cpp
+            src/airMeter.cpp
             src/bubbles.cpp
             src/wolfLinkSwimming.cpp
         MOD_JSON mod.json

@@ -22,9 +22,22 @@ ModResult WolfLinkSwimming::init() {
     REPLACE_HOOK(HookWolfSwimMove, replaceWolfSwimMove);
     PRE_HOOK(HookWolfFootBgCheck, preWolfFootBgCheck);
     POST_HOOK(HookWolfFootBgCheck, postWolfFootBgCheck);
-    REPLACE_HOOK(HookWolfSwimMoveAnmSpeed, replaceWolfSwimMoveAnmSpeed);
 
     return MOD_OK;
+}
+
+float WolfLinkSwimming::getSwimAnimSpeedMult(daAlink_c* player) {
+    float mult = 1.0f;
+    if (!player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        float oxygenPercent = (f32)dComIfGp_getOxygen() / (f32)dComIfGp_getMaxOxygen();
+        if (oxygenPercent > 0.5f) {
+            mult *= 0.5f;
+        }
+        else {
+            mult *= (1.0f - oxygenPercent) * 1.2f;
+        }
+    }
+    return mult;
 }
 
 
@@ -94,7 +107,7 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
     // always returns 1 so just set retval here for simplicity
     *static_cast<int*>(retval) = 1;
 
-    // duplicate logic from original
+    // unchanged logic from original
     {
         if (player->mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_6_e
             || player->mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_8_e) {
@@ -104,14 +117,17 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
 
         player->setSpeedAndAngleSwimWolf();
         player->setSwimUpDownOffset();
+    }
 
-        if (player->checkWolfDashMode()) {
-            player->mUnderFrameCtrl[0].setRate(player->mpHIO->mWolf.mWlSwim.m.mIdleAnmSpeed);
-        }
-        else {
-            player->mUnderFrameCtrl[0].setRate(player->mpHIO->mWolf.mWlSwim.m.mIdleAnmSpeedWeak);
-        }
+    // modification: change swim animation speed
+    float rate = player->checkWolfDashMode()
+        ? player->mpHIO->mWolf.mWlSwim.m.mIdleAnmSpeed
+        : player->mpHIO->mWolf.mWlSwim.m.mIdleAnmSpeedWeak;
+    rate *= WolfLinkSwimming::getSwimAnimSpeedMult(player);
+    player->mUnderFrameCtrl->setRate(rate);
 
+    // unchanged logic from original
+    {
         if (player->checkSwimUpAction()) {
             return;
         }
@@ -145,16 +161,22 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
     // always returns 1 so just set retval here for simplicity
     *static_cast<int*>(retval) = 1;
 
-    // duplicate logic from original
-    {
-        player->setSpeedAndAngleSwimWolf();
+    player->setSpeedAndAngleSwimWolf();
 
-        daPy_frameCtrl_c* framectrl = player->mUnderFrameCtrl;
-
-        if (!player->checkWolfSwimDashAnime()) {
-            framectrl->setRate(player->getWolfSwimMoveAnmSpeed());
+    if (!player->checkWolfSwimDashAnime()) {
+        // modification: change swim animation speed
+        float rate = player->getWolfSwimMoveAnmSpeed();
+        if (swimSinking || swimRising) {
+            rate = player->checkWolfDashMode()
+              ? player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeed
+              : player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeedWeak;
         }
+        rate *= getSwimAnimSpeedMult(player);
+        player->mUnderFrameCtrl->setRate(rate);
+    }
 
+    // bunch of unchanged logic from original
+    {
         if (player->checkSwimUpAction()) {
             return;
         }
@@ -216,41 +238,4 @@ void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*
         player->mProcID = oldProcID;
     }
     replacedState = false;
-}
-
-
-void WolfLinkSwimming::replaceWolfSwimMoveAnmSpeed(ModContext*, void* args, void* retval, void*) {
-    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
-
-    if (false) {  // replace with config check later
-        HookWolfSwimMoveAnmSpeed::g_orig(player);
-    }
-
-    f32 result;
-
-    f32 anm_speed = fabsf(player->mNormalSpeed) / player->mMaxSpeed;
-    if (anm_speed > 1.0f) {
-        anm_speed = 1.0f;
-    }
-    // consider moving up/down to be swimming at max speed also
-    if (swimSinking || swimRising) {
-        anm_speed = 1.0f;
-    }
-
-    f32 minSpeed;
-    f32 maxSpeed;
-
-    if (player->checkWolfDashMode()) {
-        minSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMinAnmSpeed;
-        maxSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeed;
-    }
-    else {
-        minSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMinAnmSpeedWeak;
-        maxSpeed = player->mpHIO->mWolf.mWlSwim.m.mMoveMaxAnmSpeedWeak;
-    }
-    // todo: mess with these values later
-
-    result = minSpeed + anm_speed * (maxSpeed - minSpeed);
-
-    *static_cast<f32*>(retval) = result;
 }

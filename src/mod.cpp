@@ -5,7 +5,7 @@
 #include "mods/svc/log.hpp"
 #include "wolfLinkSwimming.h"
 #include "bubbles.h"
-
+#include "airMeter.h"
 
 DEFINE_MOD();
 
@@ -18,13 +18,17 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     
     // todo: figure out better error reporting here?
     WolfLinkSwimming::init();
+    AirMeter::init();
     Bubbles::init();
 
-    svc_log->info(mod_ctx, "swimming_n_stuff initialized");
+    mods::log::info("swimming_n_stuff initialized");
     return MOD_OK;
 }
 
 MOD_EXPORT ModResult mod_update(ModError*) {
+    AirMeter::update();
+    Bubbles::update();
+
     return MOD_OK;
 }
 
