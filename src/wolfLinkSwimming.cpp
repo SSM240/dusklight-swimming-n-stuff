@@ -221,6 +221,7 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
     return;
 }
 
+
 // hack: this function is coded not to touch player pitch in PROC_WOLF_CARGO_CARRY
 // so by replacing the proc ID temporarily we can disable this in other states also
 HookAction WolfLinkSwimming::preWolfFootBgCheck(ModContext*, void* args, void*, void*) {
@@ -233,7 +234,6 @@ HookAction WolfLinkSwimming::preWolfFootBgCheck(ModContext*, void* args, void*, 
     }
     return HOOK_CONTINUE;
 }
-
 // restore the proc ID if we changed it in preWolfFootBgCheck
 void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
@@ -243,13 +243,13 @@ void WolfLinkSwimming::postWolfFootBgCheck(ModContext*, void* args, void*, void*
     replacedState = false;
 }
 
+
 // keep track of whether we're low on air at the moment we surface
 HookAction WolfLinkSwimming::preWolfSwimUpInit(ModContext*, void* args, void*, void*) {
     float oxygenPercent = (f32)dComIfGp_getOxygen() / (f32)dComIfGp_getMaxOxygen();
     wasLowOnAir = oxygenPercent < 0.5f;
     return HOOK_CONTINUE;
 }
-
 void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
