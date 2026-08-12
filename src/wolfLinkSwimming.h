@@ -41,5 +41,4 @@ void replaceWolfSwimWait(ModContext*, void* args, void* retval, void*);
 void replaceWolfSwimMove(ModContext*, void* args, void* retval, void*);
 HookAction preWolfFootBgCheck(ModContext*, void* args, void*, void*);
 void postWolfFootBgCheck(ModContext*, void* args, void*, void*);
-void replaceWolfSwimMoveAnmSpeed(ModContext*, void* args, void* retval, void*);
 }
