@@ -21,11 +21,7 @@ ModResult Camera::init()
 
 void Camera::postLinkProcCoDeadInit(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
-    // if function never really got run, don't do anything
-    if (!player->commonProcInitNotSameProc(daAlink_c::PROC_DEAD)) {
-        return;
-    }
     // undo camera change on death
     // todo: config
-    //player->mDemo.resetDemoType();
+    player->mDemo.resetDemoType();
 }
