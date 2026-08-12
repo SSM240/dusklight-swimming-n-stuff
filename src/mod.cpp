@@ -31,6 +31,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
 MOD_EXPORT ModResult mod_update(ModError*) {
     AirMeter::update();
     Bubbles::update();
+    WolfLinkSwimming::update();
 
     return MOD_OK;
 }

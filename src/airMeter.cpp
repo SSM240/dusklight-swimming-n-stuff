@@ -1,6 +1,5 @@
 #include "airMeter.h"
 #include "util.h"
-#include <algorithm>
 #include "mods/svc/hook.h"
 #include "mods/svc/hook.hpp"
 #include "mods/svc/log.h"
@@ -11,7 +10,9 @@
 #include "d/d_meter2_draw.h"
 #include "d/d_com_inf_game.h"
 #include "types.h"
+#include "m_Do/m_Do_controller_pad.h"
 #include "JSystem/JAudio2/JAISound.h"
+#include "SSystem/SComponent/c_lib.h"
 
 ModResult AirMeter::init() {
     ModResult result;
@@ -49,7 +50,7 @@ HookAction AirMeter::preDrawKanteraScreen(ModContext*, void*, void*, void*) {
     prevMaxOxygen = dComIfGp_getMaxOxygen();
     // pretend max oxygen is at most 28 secs for this function
     // so higher values don't make the "low air" sfx play for a super long time (~14 secs max)
-    dComIfGp_setMaxOxygen(std::min(prevMaxOxygen, 840));
+    dComIfGp_setMaxOxygen(cLib_maxLimit(prevMaxOxygen, 840));
     return HOOK_CONTINUE;
 }
 

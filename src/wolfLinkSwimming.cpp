@@ -1,7 +1,5 @@
 #include "wolfLinkSwimming.h"
 #include "util.h"
-#include <algorithm>
-#include <cmath>
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
 #include "mods/svc/log.hpp"
@@ -29,6 +27,24 @@ ModResult WolfLinkSwimming::init() {
     return MOD_OK;
 }
 
+ModResult WolfLinkSwimming::update() {
+    daAlink_c* player = daAlink_getAlinkActorClass();
+
+    if (!player) {
+        return MOD_OK;
+    }
+
+    // if player isn't underwater, disable stationary movement
+    // so you don't have to manually swim up after jumping into water
+    if (!player->checkModeFlg(daAlink_c::MODE_SWIMMING)
+        || player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP))
+    {
+        shouldStayStill = false;
+    }
+
+    return MOD_OK;
+}
+
 float WolfLinkSwimming::getSwimAnimSpeedMult(daAlink_c* player) {
     float mult = 1.0f;
     if (!player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
@@ -50,37 +66,22 @@ void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
     bool holdingRiseButton = mDoCPd_c::getHoldY(PAD_1);
 
     swimSinking = swimRising = false;
-    
-    // don't try to touch player's speed if they're not trying to dive or swim up
-    // so jumping into water still raises you to the surface
-    if (player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
-        shouldStayStill = false;
-    }
 
     // stationary
     if (shouldStayStill && holdingSinkButton == holdingRiseButton) {
-        if (std::fabs(player->speed.y) < 1.0f) {  // prevent jittering
-            player->speed.y = 0.0f;
-        }
-        else if (player->speed.y > 0.0f) {
-            player->speed.y -= SWIM_ACCEL;
-        }
-        else if (player->speed.y < 0.0f) {
-            player->speed.y += SWIM_ACCEL;
-        }
+        cLib_chaseF(&player->speed.y, 0.0f, SWIM_ACCEL);
     }
     else if (holdingSinkButton) {
         shouldStayStill = true;
         swimSinking = true;
         player->offNoResetFlg0(daAlink_c::FLG0_SWIM_UP);  // set player to be underwater
-        player->speed.y = std::max(player->speed.y - SWIM_ACCEL, MAX_SINK_SPEED);
+        cLib_chaseF(&player->speed.y, MAX_SINK_SPEED, SWIM_ACCEL);
     }
     else if (holdingRiseButton 
       && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
         shouldStayStill = true;
         swimRising = true;
-        player->speed.y += SWIM_ACCEL;
-        // no need to cap speed, already done by the game
+        cLib_chaseF(&player->speed.y, MAX_RISE_SPEED, SWIM_ACCEL);
     }
 
     // offset regular acceleration

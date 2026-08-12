@@ -32,6 +32,7 @@ static bool replacedState = false;
 static u16 oldProcID;
 
 ModResult init();
+ModResult update();
 float getSwimAnimSpeedMult(daAlink_c* player);
 void doWolfLinkSwimMovement(daAlink_c* player);
 void doWolfLinkSwimAngle(daAlink_c* player);
