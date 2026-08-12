@@ -29,6 +29,11 @@ ModResult AirMeter::update() {
     // TODO: config
     dComIfGp_setMaxOxygen(1200);
 
+    // for testing
+    if (mDoCPd_c::getTrigR(PAD_1)) {
+        dComIfGp_setOxygen(0);
+    }
+
     return MOD_OK;
 }
 
