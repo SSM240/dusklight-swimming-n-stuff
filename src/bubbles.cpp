@@ -2,7 +2,6 @@
 #include "airMeter.h"
 #include "util.h"
 #include <cmath>
-#include "mods/hook.hpp"
 #include "mods/svc/hook.h"
 #include "mods/svc/hook.hpp"
 #include "mods/svc/log.h"

@@ -4,7 +4,7 @@
 
 #define INSTALL_HOOK(entry, func, type)              \
 mods::log::debug("installing {}...", #func);         \
-result = mods::hook_##type<entry>(func);             \
+result = mods::hook::type<entry>(func);              \
 if (result != MOD_OK) {                              \
     mods::log::error("failed to install {}", #func); \
     return result;                                   \
