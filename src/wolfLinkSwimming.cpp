@@ -113,7 +113,7 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
 void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // replace with config check later
+    if (false) {  // todo: replace with config check later
         swimSinking = swimRising = false;
         HookWolfSwimWait::g_orig(player);
         return;
@@ -168,7 +168,7 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
 void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // replace with config check later
+    if (false) {  // todo: replace with config check later
         swimSinking = swimRising = false;
         HookWolfSwimMove::g_orig(player);
         return;
@@ -267,7 +267,7 @@ HookAction WolfLinkSwimming::preWolfSwimUpInit(ModContext*, void* args, void*, v
 void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // replace with config check later
+    if (false) {  // todo: replace with config check later
         HookWolfSwimWait::g_orig(player);
         return;
     }
