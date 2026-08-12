@@ -6,6 +6,7 @@
 #include "airMeter.h"
 #include "bubbles.h"
 #include "camera.h"
+#include "misc.h"
 #include "wolfLinkSwimming.h"
 
 DEFINE_MOD();
@@ -17,10 +18,11 @@ extern "C" {
 MOD_EXPORT ModResult mod_initialize(ModError*) {
     ModResult result;
     
-    INIT(WolfLinkSwimming);
     INIT(AirMeter);
     INIT(Bubbles);
     INIT(Camera);
+    INIT(Misc);
+    INIT(WolfLinkSwimming);
 
     mods::log::info("swimming_n_stuff initialized");
     return MOD_OK;
