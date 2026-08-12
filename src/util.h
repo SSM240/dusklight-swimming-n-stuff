@@ -3,7 +3,7 @@
 #include "mods/svc/log.hpp"
 
 #define INSTALL_HOOK(entry, func, type)              \
-mods::log::debug("installing {}...", #func);         \
+mods::log::trace("installing {}...", #func);         \
 result = mods::hook::type<entry>(func);              \
 if (result != MOD_OK) {                              \
     mods::log::error("failed to install {}", #func); \
