@@ -16,6 +16,7 @@ add_mod(swimming_n_stuff
             src/mod.cpp
             src/airMeter.cpp
             src/bubbles.cpp
+            src/camera.cpp
             src/wolfLinkSwimming.cpp
         MOD_JSON mod.json
         RES_DIR res            # mod resources, including icon.png and banner.png

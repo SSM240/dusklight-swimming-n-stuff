@@ -12,6 +12,7 @@ DEFINE_HOOK(&daAlink_c::procWolfSwimUpInit, HookWolfSwimUpInit);
 DEFINE_HOOK(&daAlink_c::procWolfSwimUp, HookWolfSwimUp);
 DEFINE_HOOK(&daAlink_c::procWolfSwimWait, HookWolfSwimWait);
 DEFINE_HOOK(&daAlink_c::procWolfSwimMove, HookWolfSwimMove);
+DEFINE_HOOK(&daAlink_c::procCoDead, HookProcCoDead);
 DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
 
 static const float SWIM_ACCEL = 1.0f;
@@ -39,6 +40,7 @@ HookAction preWolfSwimUpInit(ModContext*, void* args, void*, void*);
 void replaceWolfSwimUp(ModContext*, void* args, void* retval, void*);
 void replaceWolfSwimWait(ModContext*, void* args, void* retval, void*);
 void replaceWolfSwimMove(ModContext*, void* args, void* retval, void*);
+void postProcCoDead(ModContext*, void* args, void*, void*);
 HookAction preWolfFootBgCheck(ModContext*, void* args, void*, void*);
 void postWolfFootBgCheck(ModContext*, void* args, void*, void*);
 }

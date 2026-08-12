@@ -22,6 +22,7 @@ ModResult WolfLinkSwimming::init() {
     REPLACE_HOOK(HookWolfSwimMove, replaceWolfSwimMove);
     PRE_HOOK(HookWolfFootBgCheck, preWolfFootBgCheck);
     POST_HOOK(HookWolfFootBgCheck, postWolfFootBgCheck);
+    POST_HOOK(HookProcCoDead, postProcCoDead);
     PRE_HOOK(HookWolfSwimUpInit, preWolfSwimUpInit);
     REPLACE_HOOK(HookWolfSwimUp, replaceWolfSwimUp);
 
@@ -231,6 +232,24 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
     }
 
     return;
+}
+
+void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+    // if player is wolf and underwater
+    if (player->checkWolf()
+      && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
+      && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        // change player to float down very slowly instead of floating up
+        player->speed.y -= 0.1f;
+        if (player->speed.y < -2.0f) {
+            player->speed.y = -2.0f;
+        }
+        player->speed.y = cLib_minLimit(player->speed.y - 0.1f, -2.0f);
+
+        // offset buoyancy
+        player->speed.y -= player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
+    }
 }
 
 
