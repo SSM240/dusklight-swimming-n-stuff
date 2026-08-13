@@ -102,11 +102,9 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
         target = cM_atan2s(-targetYSpeed, player->speed.absXZ());
     }
     // straight up looks slightly odd to me for some reason
-    if (target < -15000) {
-        target = -15000;
-    }
+    target = cLib_minLimit(target, MAX_LOOK_UP_ANGLE);
     
-    cLib_addCalcAngleS(&player->shape_angle.x, target, 3, 2000, 500);
+    cLib_addCalcAngleS(&player->shape_angle.x, target, 3, ANGLE_MAX_STEP, ANGLE_MIN_STEP);
 }
 
 
@@ -241,11 +239,7 @@ void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
       && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
       && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
         // change player to float down very slowly instead of floating up
-        player->speed.y -= 0.1f;
-        if (player->speed.y < -2.0f) {
-            player->speed.y = -2.0f;
-        }
-        player->speed.y = cLib_minLimit(player->speed.y - 0.1f, -2.0f);
+        player->speed.y = cLib_minLimit(player->speed.y + DEAD_ACCEL, DEAD_SINK_SPEED);
 
         // offset buoyancy
         player->speed.y -= player->mpHIO->mWolf.mWlSwim.m.mBuoyancy;
