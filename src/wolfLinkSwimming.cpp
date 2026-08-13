@@ -67,7 +67,6 @@ void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
 
     swimSinking = swimRising = false;
 
-    // stationary
     if (shouldStayStill && holdingSinkButton == holdingRiseButton) {
         cLib_chaseF(&player->speed.y, 0.0f, SWIM_ACCEL);
     }
