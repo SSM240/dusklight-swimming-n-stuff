@@ -1,3 +1,4 @@
+#include <string>
 #include "mods/service.hpp"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
@@ -14,6 +15,8 @@ DEFINE_MOD();
 IMPORT_SERVICE(LogService, svc_log);
 IMPORT_SERVICE(HookService, svc_hook);
 
+std::string Util::currName = "";
+
 extern "C" {
 MOD_EXPORT ModResult mod_initialize(ModError*) {
     ModResult result;
@@ -24,7 +27,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     INIT(Misc);
     INIT(WolfLinkSwimming);
 
-    mods::log::info("swimming_n_stuff initialized");
+    mods::log::info("mod initialized successfully!");
     return MOD_OK;
 }
 
