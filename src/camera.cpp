@@ -26,7 +26,7 @@ void Camera::postLinkProcCoDead(ModContext*, void* args, void*, void*) {
     // prevent camera from changing on death
     // todo: config
     player->mProcVar3.field_0x300e = 0;
-    shouldAllowCameraControl = true;
+    forceAllowCameraControl = true;
 }
 
 // very stupid hack
@@ -36,8 +36,8 @@ void Camera::postLinkProcCoDead(ModContext*, void* args, void*, void*) {
 // so we can hijack the function and run updatePad to read the c-stick values again
 void Camera::postCheckForceLockTarget(ModContext*, void* args, void*, void*) {
     dCamera_c* camera = mods::arg<dCamera_c*>(args, 0);
-    if (shouldAllowCameraControl) {
+    if (forceAllowCameraControl) {
         camera->updatePad();
     }
-    shouldAllowCameraControl = false;
+    forceAllowCameraControl = false;
 }

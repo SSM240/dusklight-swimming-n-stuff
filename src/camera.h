@@ -14,7 +14,7 @@ DEFINE_HOOK(&dCamera_c::checkForceLockTarget, HookCheckForceLockTarget);
 
 ModResult init();
 
-static bool shouldAllowCameraControl;
+static bool forceAllowCameraControl;
 
 static f32 mLastPosX;
 static f32 mLastPosY;
