@@ -318,7 +318,7 @@ HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retv
         return HOOK_CONTINUE;
     }
     
-    // the following ig a copypasted version of the original code, slightly simplified
+    // the following is a copypasted version of the original code, slightly simplified
     // but without descriptive var names cus i barely understand most of this anyway :)
     {
         csXyz sp18(0, 0, 0);
