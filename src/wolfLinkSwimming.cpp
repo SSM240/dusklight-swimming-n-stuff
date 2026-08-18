@@ -308,6 +308,7 @@ void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, 
 }
 
 
+// allows wolf link's tail to also be rotated vertically
 HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retval, void*) {
     if (false) {  // todo: replace with config check later 
         return HOOK_CONTINUE;
@@ -431,7 +432,7 @@ HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retv
 
 void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
-    // same logic but with x rotation instead
+    // same logic but with vertical rotation instead
     s16* tailAngleX = wolfTailAngleX;
     s16* tailSwayDampX = wolfTailSwayDampX;
 
@@ -439,7 +440,7 @@ void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void
 
     for (int i = 0; i < 3; i++, tailAngleX++, tailSwayDampX++) {
         if (player->checkEndResetFlg0(daAlink_c::ERFLG0_UNK_800000)
-            && !(player->checkWolf() && player->checkModeFlg(daAlink_c::MODE_SWIMMING))) {
+            && !player->checkModeFlg(daAlink_c::MODE_SWIMMING)) {
             *tailAngleX = 0;
             *tailSwayDampX = 0;
         }
@@ -468,7 +469,7 @@ HookAction WolfLinkSwimming::preSetWolfFootMatrix(ModContext*, void* args, void*
         return HOOK_CONTINUE;
     }
 
-    if (player->checkWolf() && player->checkModeFlg(daAlink_c::MODE_SWIMMING)) {
+    if (player->checkModeFlg(daAlink_c::MODE_SWIMMING)) {
         return HOOK_SKIP_ORIGINAL;
     }
     
