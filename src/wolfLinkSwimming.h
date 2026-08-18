@@ -16,6 +16,7 @@ DEFINE_HOOK(&daAlink_c::procCoDead, HookProcCoDead);
 DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
 DEFINE_HOOK(&daAlink_c::jointControll, HookJointControl);
 DEFINE_HOOK(&daAlink_c::setWolfTailAngle, HookSetWolfTailAngle);
+DEFINE_HOOK(&daAlink_c::setWolfFootMatrix, HookSetWolfFootMatrix);
 
 const float SWIM_ACCEL = 1.0f;
 const float MAX_SINK_SPEED = -10.0f;
@@ -56,4 +57,5 @@ HookAction preWolfFootBgCheck(ModContext*, void* args, void*, void*);
 void postWolfFootBgCheck(ModContext*, void* args, void*, void*);
 HookAction preJointControl(ModContext*, void* args, void* retval, void*);
 void postSetWolfTailAngle(ModContext*, void* args, void*, void*);
+HookAction preSetWolfFootMatrix(ModContext*, void* args, void* retval, void*);
 }

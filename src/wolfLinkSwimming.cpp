@@ -25,6 +25,7 @@ ModResult WolfLinkSwimming::init() {
     REPLACE_HOOK(HookWolfSwimUp, replaceWolfSwimUp);
     PRE_HOOK(HookJointControl, preJointControl);
     POST_HOOK(HookSetWolfTailAngle, postSetWolfTailAngle);
+    PRE_HOOK(HookSetWolfFootMatrix, preSetWolfFootMatrix);
 
     return MOD_OK;
 }
@@ -456,4 +457,20 @@ void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void
 
     // close enough right
     playerPrevAngleX = player->shape_angle.x;
+}
+
+// disable trying to align feet with the ground while swimming 
+// since it looks really bad when swimming up/down
+HookAction WolfLinkSwimming::preSetWolfFootMatrix(ModContext*, void* args, void*, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+
+    if (false) {  // todo: replace with config check later
+        return HOOK_CONTINUE;
+    }
+
+    if (player->checkWolf() && player->checkModeFlg(daAlink_c::MODE_SWIMMING)) {
+        return HOOK_SKIP_ORIGINAL;
+    }
+    
+    return HOOK_CONTINUE;
 }
