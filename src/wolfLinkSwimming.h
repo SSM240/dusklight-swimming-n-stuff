@@ -14,6 +14,8 @@ DEFINE_HOOK(&daAlink_c::procWolfSwimWait, HookWolfSwimWait);
 DEFINE_HOOK(&daAlink_c::procWolfSwimMove, HookWolfSwimMove);
 DEFINE_HOOK(&daAlink_c::procCoDead, HookProcCoDead);
 DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
+DEFINE_HOOK(&daAlink_c::jointControll, HookJointControl);
+DEFINE_HOOK(&daAlink_c::setWolfTailAngle, HookSetWolfTailAngle);
 
 const float SWIM_ACCEL = 1.0f;
 const float MAX_SINK_SPEED = -10.0f;
@@ -34,6 +36,10 @@ static bool swimRising;
 static bool replacedState = false;
 static u16 oldProcID;
 
+static s16 playerPrevAngleX;
+static s16 wolfTailAngleX[3];
+static s16 wolfTailSwayDampX[3];
+
 ModResult init();
 ModResult update();
 
@@ -48,4 +54,6 @@ void replaceWolfSwimMove(ModContext*, void* args, void* retval, void*);
 void postProcCoDead(ModContext*, void* args, void*, void*);
 HookAction preWolfFootBgCheck(ModContext*, void* args, void*, void*);
 void postWolfFootBgCheck(ModContext*, void* args, void*, void*);
+HookAction preJointControl(ModContext*, void* args, void* retval, void*);
+void postSetWolfTailAngle(ModContext*, void* args, void*, void*);
 }

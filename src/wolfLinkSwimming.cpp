@@ -23,6 +23,8 @@ ModResult WolfLinkSwimming::init() {
     POST_HOOK(HookProcCoDead, postProcCoDead);
     PRE_HOOK(HookWolfSwimUpInit, preWolfSwimUpInit);
     REPLACE_HOOK(HookWolfSwimUp, replaceWolfSwimUp);
+    PRE_HOOK(HookJointControl, preJointControl);
+    POST_HOOK(HookSetWolfTailAngle, postSetWolfTailAngle);
 
     return MOD_OK;
 }
@@ -302,4 +304,156 @@ void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, 
     }
 
     *static_cast<int*>(retval) = 1;
+}
+
+
+HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retval, void*) {
+    if (false) {  // todo: replace with config check later 
+        return HOOK_CONTINUE;
+    }
+
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+    int i_jointNo = mods::arg<int>(args, 1);
+    if (!(player->checkWolf() && i_jointNo >= 37 && i_jointNo <= 39)) {
+        return HOOK_CONTINUE;
+    }
+    
+    // the following ig a copypasted version of the original code, slightly simplified
+    // but without descriptive var names cus i barely understand most of this anyway :)
+    {
+        csXyz sp18(0, 0, 0);
+        int var_r27 = 0;
+
+        //J3DTransformInfo jointTrans;
+        J3DTransformInfo rootTrans = *player->field_0x2060->getOldFrameTransInfo(i_jointNo);
+
+        Quaternion sp50;
+        Quaternion sp40;
+        Quaternion sp30;
+        Quaternion sp20 = *player->field_0x2060->getOldFrameQuaternion(i_jointNo);
+
+        csXyz sp10(0, 1, 2);
+
+        //J3DTransformInfo* oldTransInfo;
+
+        // no need for checking logic, we've already done that
+        // modification: also set the x angle
+        sp18.set(wolfTailAngleX[i_jointNo - 37], player->field_0x3094[i_jointNo - 37], 0);
+        sp10.set(2, 1, 0);
+
+        if (sp18.x != 0 || sp18.y != 0 || sp18.z != 0) {
+            var_r27 |= 1;
+            if (sp18.y != 0) {
+                sp50 = *player->field_0x2060->getOldFrameQuaternion(i_jointNo);
+
+                if (sp10.y == 0) {
+                    JMAEulerToQuat(sp18.y, 0, 0, &sp40);
+                }
+                else if (sp10.y == 1) {
+                    JMAEulerToQuat(0, sp18.y, 0, &sp40);
+                }
+                else {
+                    JMAEulerToQuat(0, 0, sp18.y, &sp40);
+                }
+
+                mDoMtx_QuatConcat(&sp50, &sp40, &sp30);
+            }
+            else {
+                sp30 = *player->field_0x2060->getOldFrameQuaternion(i_jointNo);
+            }
+
+            if (sp18.x != 0) {
+                sp50 = sp30;
+
+                if (sp10.x == 0) {
+                    JMAEulerToQuat(sp18.x, 0, 0, &sp40);
+                }
+                else if (sp10.x == 1) {
+                    JMAEulerToQuat(0, sp18.x, 0, &sp40);
+                }
+                else {
+                    JMAEulerToQuat(0, 0, sp18.x, &sp40);
+                }
+
+                mDoMtx_QuatConcat(&sp50, &sp40, &sp30);
+            }
+
+            if (sp18.z != 0) {
+                sp50 = sp30;
+
+                if (sp10.z == 0) {
+                    JMAEulerToQuat(sp18.z, 0, 0, &sp40);
+                }
+                else if (sp10.z == 1) {
+                    JMAEulerToQuat(0, sp18.z, 0, &sp40);
+                }
+                else {
+                    JMAEulerToQuat(0, 0, sp18.z, &sp40);
+                }
+
+                mDoMtx_QuatConcat(&sp50, &sp40, &sp30);
+            }
+        }
+
+        if (var_r27 != 0) {
+            MtxP temp_r26 = player->mpLinkModel->getAnmMtx(i_jointNo);
+
+            J3DTransformInfo* var_r25 = player->field_0x2060->getOldFrameTransInfo(i_jointNo);
+
+            Quaternion* spC;
+            if ((var_r27 & 1)) {
+                spC = &sp30;
+            }
+            else {
+                spC = player->field_0x2060->getOldFrameQuaternion(i_jointNo);
+            }
+
+            mDoMtx_stack_c::transS(rootTrans.mTranslate.x, rootTrans.mTranslate.y, rootTrans.mTranslate.z);
+            mDoMtx_stack_c::quatM(&sp20);
+            mDoMtx_stack_c::inverse();
+            cMtx_concat(temp_r26, mDoMtx_stack_c::get(), J3DSys::mCurrentMtx);
+
+            MTXQuat(temp_r26, spC);
+
+            temp_r26[0][3] = var_r25->mTranslate.x;
+            temp_r26[1][3] = var_r25->mTranslate.y;
+            temp_r26[2][3] = var_r25->mTranslate.z;
+
+            cMtx_concat(J3DSys::mCurrentMtx, temp_r26, J3DSys::mCurrentMtx);
+            cMtx_copy(J3DSys::mCurrentMtx, temp_r26);
+        }
+
+        *static_cast<int*>(retval) = 1;
+    }
+    return HOOK_SKIP_ORIGINAL;
+}
+
+void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void*) {
+    daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
+    // same logic but with x rotation instead
+    s16* tailAngleX = wolfTailAngleX;
+    s16* tailSwayDampX = wolfTailSwayDampX;
+
+    s16 angleDiff = (s16)(player->shape_angle.x - playerPrevAngleX);
+
+    for (int i = 0; i < 3; i++, tailAngleX++, tailSwayDampX++) {
+        if (player->checkEndResetFlg0(daAlink_c::ERFLG0_UNK_800000)
+            && !(player->checkWolf() && player->checkModeFlg(daAlink_c::MODE_SWIMMING))) {
+            *tailAngleX = 0;
+            *tailSwayDampX = 0;
+        }
+        else {
+            *tailAngleX -= angleDiff;
+            s16 sp38 = *tailAngleX;
+
+            cLib_addCalcAngleS(tailAngleX, 0, 5, 500, 50);
+            *tailAngleX = cLib_minMaxLimit<s16>((s16)(*tailAngleX + *tailSwayDampX), -0x2000, 0x2000);
+
+            angleDiff = (s16)(*tailAngleX - sp38);
+            *tailSwayDampX = angleDiff * 0.5f;
+        }
+    }
+
+    // close enough right
+    playerPrevAngleX = player->shape_angle.x;
 }
