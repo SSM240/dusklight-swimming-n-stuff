@@ -12,6 +12,7 @@ DEFINE_HOOK(&daAlink_c::procWolfSwimUpInit, HookWolfSwimUpInit);
 DEFINE_HOOK(&daAlink_c::procWolfSwimUp, HookWolfSwimUp);
 DEFINE_HOOK(&daAlink_c::procWolfSwimWait, HookWolfSwimWait);
 DEFINE_HOOK(&daAlink_c::procWolfSwimMove, HookWolfSwimMove);
+DEFINE_HOOK(&daAlink_c::setNeckAngle, HookSetNeckAngle);
 DEFINE_HOOK(&daAlink_c::procCoDead, HookProcCoDead);
 DEFINE_HOOK(&daAlink_c::wolfFootBgCheck, HookWolfFootBgCheck);
 DEFINE_HOOK(&daAlink_c::jointControll, HookJointControl);
@@ -21,8 +22,8 @@ DEFINE_HOOK(&daAlink_c::setWolfFootMatrix, HookSetWolfFootMatrix);
 const float SWIM_ACCEL = 1.0f;
 const float MAX_SINK_SPEED = -10.0f;
 const float MAX_RISE_SPEED = 10.0f;
-const s16 ANGLE_MAX_STEP = 2000;
-const s16 ANGLE_MIN_STEP = 500;
+const s16 ANGLE_MAX_STEP = 1200;
+const s16 ANGLE_MIN_STEP = 400;
 const s16 MAX_LOOK_UP_ANGLE = -15000;
 
 const f32 DEAD_ACCEL = -0.12f;
@@ -36,6 +37,8 @@ static bool swimRising;
 
 static bool replacedState = false;
 static u16 oldProcID;
+
+static s16 wolfSpineAngleX;
 
 static s16 playerPrevAngleX;
 static s16 wolfTailAngleX[3];

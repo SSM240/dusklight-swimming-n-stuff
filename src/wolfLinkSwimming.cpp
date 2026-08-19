@@ -108,6 +108,18 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
     target = cLib_minLimit(target, MAX_LOOK_UP_ANGLE);
     
     cLib_addCalcAngleS(&player->shape_angle.x, target, 3, ANGLE_MAX_STEP, ANGLE_MIN_STEP);
+
+    // have the spine "lead" the rest of the body a bit
+    s16 spineTarget = target - player->shape_angle.x;
+    spineTarget = cLib_minMaxLimit<s16>(spineTarget, -8000, 8000);
+    cLib_addCalcAngleS(&wolfSpineAngleX, spineTarget, 3, ANGLE_MAX_STEP, ANGLE_MIN_STEP);
+
+    // stupid, change neck angles a bit to compensate
+    // maybe could be done better but idk how
+    if (player->mProcID == daAlink_c::PROC_WOLF_SWIM_WAIT) {
+        player->field_0x3124.x = wolfSpineAngleX;
+        player->field_0x30d6 = -wolfSpineAngleX;
+    }
 }
 
 
@@ -308,7 +320,7 @@ void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, 
 }
 
 
-// allows wolf link's tail to also be rotated vertically
+// allows wolf link's tail and spine to also be rotated vertically while swimming
 HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retval, void*) {
     if (false) {  // todo: replace with config check later 
         return HOOK_CONTINUE;
@@ -316,7 +328,9 @@ HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retv
 
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     int i_jointNo = mods::arg<int>(args, 1);
-    if (!(player->checkWolf() && i_jointNo >= 37 && i_jointNo <= 39)) {
+    bool shouldOverride = player->checkWolf() && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
+        && ((i_jointNo >= 37 && i_jointNo <= 39) || i_jointNo == 2);
+    if (!shouldOverride) {
         return HOOK_CONTINUE;
     }
     
@@ -338,10 +352,15 @@ HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retv
 
         //J3DTransformInfo* oldTransInfo;
 
-        // no need for checking logic, we've already done that
-        // modification: also set the x angle
-        sp18.set(wolfTailAngleX[i_jointNo - 37], player->field_0x3094[i_jointNo - 37], 0);
-        sp10.set(2, 1, 0);
+        // modification: also set the x angle for these joints
+        if (i_jointNo == 2) {  // spine
+            sp18.set(wolfSpineAngleX, -player->field_0x2fec, 0);
+            sp10.set(2, 1, 0);
+        }
+        else if (i_jointNo >= 37 && i_jointNo <= 39) {  // tail
+            sp18.set(wolfTailAngleX[i_jointNo - 37], player->field_0x3094[i_jointNo - 37], 0);
+            sp10.set(2, 1, 0);
+        }
 
         if (sp18.x != 0 || sp18.y != 0 || sp18.z != 0) {
             var_r27 |= 1;
@@ -452,7 +471,7 @@ void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void
             *tailAngleX = cLib_minMaxLimit<s16>((s16)(*tailAngleX + *tailSwayDampX), -0x2000, 0x2000);
 
             angleDiff = (s16)(*tailAngleX - sp38);
-            *tailSwayDampX = angleDiff * 0.5f;
+            *tailSwayDampX = angleDiff * 0.6f;
         }
     }
 
