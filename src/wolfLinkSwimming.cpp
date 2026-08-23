@@ -111,7 +111,7 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
 
     // have the spine "lead" the rest of the body a bit
     s16 spineTarget = target - player->shape_angle.x;
-    spineTarget = cLib_minMaxLimit<s16>(spineTarget, -8000, 8000);
+    spineTarget = cLib_minMaxLimit<s16>(spineTarget, SPINE_MIN_ANGLE, SPINE_MAX_ANGLE);
     cLib_addCalcAngleS(&wolfSpineAngleX, spineTarget, 3, ANGLE_MAX_STEP, ANGLE_MIN_STEP);
 
     // stupid, change neck angles a bit to compensate
@@ -253,7 +253,6 @@ void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
     if (player->checkWolf()
       && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
       && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
-        // change player to float down very slowly instead of floating up
         player->speed.y = cLib_minLimit(player->speed.y + DEAD_ACCEL, DEAD_SINK_SPEED);
 
         // offset buoyancy

@@ -25,9 +25,11 @@ const float MAX_RISE_SPEED = 10.0f;
 const s16 ANGLE_MAX_STEP = 1200;
 const s16 ANGLE_MIN_STEP = 400;
 const s16 MAX_LOOK_UP_ANGLE = -15000;
+const s16 SPINE_MIN_ANGLE = -7000;
+const s16 SPINE_MAX_ANGLE = 8000;
 
 const f32 DEAD_ACCEL = -0.12f;
-const f32 DEAD_SINK_SPEED = -2.0f;
+const f32 DEAD_SINK_SPEED = 0.0f;
 
 static bool wasLowOnAir;
 
