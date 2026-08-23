@@ -3,7 +3,7 @@ project(swimming_n_stuff CXX)
 
 # The Dusklight version to build against: a release tag (e.g. "v1.5.0") or a commit SHA.
 if (NOT DUSKLIGHT_VERSION)
-    set(DUSKLIGHT_VERSION "7434a0f834866294e7691bd86ab9527011265585") # 2026-08-08
+    set(DUSKLIGHT_VERSION "41d5148793cf67f0e93e79cf3eab8718d6e9849d") # 2026-08-22
 endif ()
 # Fetches the Dusklight sources into ./dusklight and provides DUSKLIGHT_DIR.
 # Use -DDUSKLIGHT_DIR= to point at an existing Dusklight checkout.
