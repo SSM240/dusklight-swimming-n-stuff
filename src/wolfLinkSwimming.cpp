@@ -138,7 +138,8 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
     // unchanged logic from original
     {
         if (player->mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_6_e
-            || player->mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_8_e) {
+            || player->mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_8_e)
+        {
             player->setShapeAngleToTalkActor();
             player->current.angle.y = player->shape_angle.y;
         }
@@ -240,7 +241,10 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
     doWolfLinkSwimAngle(player);
 
     // modification: stay in this state if swimming up or down
-    if (!player->checkInputOnR() && !player->checkWolfSwimDashAnime() && !swimRising && !swimSinking) {
+    if (!player->checkInputOnR() 
+        && !player->checkWolfSwimDashAnime() 
+        && !swimRising && !swimSinking)
+    {
         player->procWolfSwimWaitInit(0);
     }
 
@@ -251,8 +255,9 @@ void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     // if player is wolf and underwater
     if (player->checkWolf()
-      && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
-      && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP)) {
+        && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
+        && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP))
+    {
         player->speed.y = cLib_minLimit(player->speed.y + DEAD_ACCEL, DEAD_SINK_SPEED);
 
         // offset buoyancy
@@ -458,7 +463,8 @@ void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void
 
     for (int i = 0; i < 3; i++, tailAngleX++, tailSwayDampX++) {
         if (player->checkEndResetFlg0(daAlink_c::ERFLG0_UNK_800000)
-            && !player->checkModeFlg(daAlink_c::MODE_SWIMMING)) {
+            && !player->checkModeFlg(daAlink_c::MODE_SWIMMING))
+        {
             *tailAngleX = 0;
             *tailSwayDampX = 0;
         }
