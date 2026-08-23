@@ -5,9 +5,9 @@
 #include "mods/svc/log.hpp"
 #include "util.h"
 #include "airMeter.h"
+#include "audio.h"
 #include "bubbles.h"
 #include "camera.h"
-#include "misc.h"
 #include "wolfLinkSwimming.h"
 
 DEFINE_MOD();
@@ -24,7 +24,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     INIT(AirMeter);
     INIT(Bubbles);
     INIT(Camera);
-    INIT(Misc);
+    INIT(Audio);
     INIT(WolfLinkSwimming);
 
     mods::log::info("mod initialized successfully!");
@@ -33,6 +33,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
 
 MOD_EXPORT ModResult mod_update(ModError*) {
     AirMeter::update();
+    Audio::update();
     Bubbles::update();
     WolfLinkSwimming::update();
 

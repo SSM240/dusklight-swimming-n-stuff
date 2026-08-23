@@ -7,11 +7,13 @@
 #include "Z2AudioLib/Z2SeqMgr.h"
 #include "types.h"
 
-namespace Misc
+namespace Audio
 {
 DEFINE_HOOK(&Z2SeqMgr::checkBgmIDPlaying, HookCheckBgmIDPlaying);
 
 ModResult init();
+
+ModResult update();
 
 HookAction preCheckBgmIDPlaying(ModContext*, void* args, void* retval, void*);
 }
