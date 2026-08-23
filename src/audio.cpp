@@ -58,13 +58,15 @@ HookAction Audio::preVoiceStart(ModContext*, void* args, void*, void*)
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     u32 i_soundID = mods::arg<int>(args, 1);
 
+    if (i_soundID != Z2SE_WL_V_BREATH_WAIT && i_soundID != Z2SE_WL_V_BREATH_WALK) {
+        return HOOK_CONTINUE;
+    }
+
     if (player->checkWolf()
         && player->checkModeFlg(daAlink_c::MODE_SWIMMING)
         && !player->checkNoResetFlg0(daAlink_c::FLG0_SWIM_UP))
     {
-        if (i_soundID == Z2SE_WL_V_BREATH_WAIT || i_soundID == Z2SE_WL_V_BREATH_WALK) {
-            return HOOK_SKIP_ORIGINAL;
-        }
+        return HOOK_SKIP_ORIGINAL;
     }
 
     return HOOK_CONTINUE;
