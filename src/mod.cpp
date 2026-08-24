@@ -22,9 +22,9 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     ModResult result;
     
     INIT(AirMeter);
+    INIT(Audio);
     INIT(Bubbles);
     INIT(Camera);
-    INIT(Audio);
     INIT(WolfLinkSwimming);
 
     mods::log::info("mod initialized successfully!");
