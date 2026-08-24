@@ -11,8 +11,7 @@
 #include "d/d_com_inf_game.h"
 #include "types.h"
 
-ModResult Camera::init()
-{
+ModResult Camera::init() {
     ModResult result;
 
     POST_HOOK(HookProcCoDead, postLinkProcCoDead);
