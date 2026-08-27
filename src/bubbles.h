@@ -16,6 +16,6 @@ static float bubbleFrequency;
 ModResult init();
 ModResult update();
 
-HookAction preSetEmitter(ModContext*, void* args, void* retval, void*);
+HookAction preSetEmitterPolyColor(ModContext*, void* args, void* retval, void*);
 void postSetEffect(ModContext*, void* args, void* retval, void*);
 }

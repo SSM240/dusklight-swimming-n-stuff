@@ -22,7 +22,7 @@
 ModResult Bubbles::init() {
     ModResult result;
 
-    PRE_HOOK(HookSetEmitterPolyColor, preSetEmitter);
+    PRE_HOOK(HookSetEmitterPolyColor, preSetEmitterPolyColor);
     POST_HOOK(HookSetEffect, postSetEffect);
 
     return MOD_OK;
@@ -43,7 +43,10 @@ ModResult Bubbles::update() {
     }
     else {
         deathTimer = 0;
-        if (oxygenPercent > 0.5f) {
+        if (mDoCPd_c::getHoldR(PAD_1)) {  // todo: config
+            bubbleFrequency = 1.0f;
+        }
+        else if (oxygenPercent > 0.5f) {
             bubbleFrequency = 0.05f;
         }
         else {
@@ -55,7 +58,7 @@ ModResult Bubbles::update() {
 }
 
 
-HookAction Bubbles::preSetEmitter(ModContext*, void* args, void* retval, void*) {
+HookAction Bubbles::preSetEmitterPolyColor(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     u16 i_effName = mods::arg<u16>(args, 2);
     if (i_effName != ID_ZI_J_LK_ABUKU_A) {
