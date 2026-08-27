@@ -8,6 +8,7 @@
 #include "audio.h"
 #include "bubbles.h"
 #include "camera.h"
+#include "graphics.h"
 #include "wolfLinkSwimming.h"
 
 DEFINE_MOD();
@@ -25,6 +26,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     INIT(Audio);
     INIT(Bubbles);
     INIT(Camera);
+    INIT(Graphics);
     INIT(WolfLinkSwimming);
 
     mods::log::info("mod initialized successfully!");
@@ -35,6 +37,7 @@ MOD_EXPORT ModResult mod_update(ModError*) {
     AirMeter::update();
     Audio::update();
     Bubbles::update();
+    Graphics::update();
     WolfLinkSwimming::update();
 
     return MOD_OK;
