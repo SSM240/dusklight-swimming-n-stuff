@@ -14,8 +14,6 @@ DEFINE_HOOK(&daAlink_c::voiceStart, HookVoiceStart);
 
 ModResult init();
 
-ModResult update();
-
 HookAction preCheckBgmIDPlaying(ModContext*, void* args, void* retval, void*);
 HookAction preVoiceStart(ModContext*, void* args, void*, void*);
 }

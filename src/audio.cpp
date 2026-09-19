@@ -22,19 +22,6 @@ ModResult Audio::init()
     return MOD_OK;
 }
 
-ModResult Audio::update()
-{
-    // music muting
-    if (mDoCPd_c::getHoldR(PAD_1) && mDoCPd_c::getTrigDown(PAD_1)) {
-        Z2GetAudioMgr()->muteSceneBgm(15, 0.0f);
-    }
-    else if (mDoCPd_c::getHoldR(PAD_1) && mDoCPd_c::getTrigUp(PAD_1)) {
-        Z2GetAudioMgr()->unMuteSceneBgm(15);
-    }
-
-    return MOD_OK;
-}
-
 // hack: game over screen waits for the game over music to end
 // so pretend it's never actually playing so the retry prompt comes up faster
 HookAction Audio::preCheckBgmIDPlaying(ModContext*, void* args, void* retval, void*)

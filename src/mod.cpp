@@ -35,7 +35,6 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
 
 MOD_EXPORT ModResult mod_update(ModError*) {
     AirMeter::update();
-    Audio::update();
     Bubbles::update();
     Graphics::update();
     WolfLinkSwimming::update();
