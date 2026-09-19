@@ -1,5 +1,3 @@
 # Dusklight - Swimming n' Stuff
 
-A mod for [Dusklight](https://github.com/TwilitRealm/dusklight/tree/main) where I put basically whatever I feel like, including ports of [my various Gecko codes](https://gist.github.com/SSM240/9b39914036d0f4fd5c342a8f80d081af).
-
-Currently modding support requires an in-development build (such as [this one](https://nightly.link/TwilitRealm/dusklight/actions/runs/34543965489), but hopefully that'll change at some point. No idea when though :P
+A mod for [Dusklight](https://github.com/TwilitRealm/dusklight/tree/main) where I put basically whatever I feel like, including ports of [my various Gecko codes](https://gist.github.com/SSM240/9b39914036d0f4fd5c342a8f80d081af). Requires Dusklight v2.0.0 or later.
