@@ -1,4 +1,5 @@
 #include "wolfLinkSwimming.h"
+#include "config.h"
 #include "util.h"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
@@ -126,7 +127,7 @@ void WolfLinkSwimming::doWolfLinkSwimAngle(daAlink_c* player) {
 void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // todo: replace with config check later
+    if (!Config::getWolfLinkSwimming()) {
         swimSinking = swimRising = false;
         HookWolfSwimWait::g_orig(player);
         return;
@@ -182,7 +183,7 @@ void WolfLinkSwimming::replaceWolfSwimWait(ModContext*, void* args, void* retval
 void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // todo: replace with config check later
+    if (!Config::getWolfLinkSwimming()) {
         swimSinking = swimRising = false;
         HookWolfSwimMove::g_orig(player);
         return;
@@ -252,6 +253,10 @@ void WolfLinkSwimming::replaceWolfSwimMove(ModContext*, void* args, void* retval
 }
 
 void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
+    if (!Config::getWolfLinkSwimming()) {
+        return;
+    }
+
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     // if player is wolf and underwater
     if (player->checkWolf()
@@ -269,6 +274,10 @@ void WolfLinkSwimming::postProcCoDead(ModContext*, void* args, void*, void*) {
 // hack: this function is coded not to touch player pitch in PROC_WOLF_CARGO_CARRY
 // so by replacing the proc ID temporarily we can disable this in other states also
 HookAction WolfLinkSwimming::preWolfFootBgCheck(ModContext*, void* args, void*, void*) {
+    if (!Config::getWolfLinkSwimming()) {
+        replacedState = false;
+        return HOOK_CONTINUE;
+    }
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     u16 procID = player->mProcID;
     if ((procID == daAlink_c::PROC_WOLF_SWIM_MOVE || procID == daAlink_c::PROC_WOLF_SWIM_WAIT)
@@ -298,7 +307,7 @@ HookAction WolfLinkSwimming::preWolfSwimUpInit(ModContext*, void* args, void*, v
 void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // todo: replace with config check later
+    if (!Config::getWolfLinkSwimming()) {
         HookWolfSwimWait::g_orig(player);
         return;
     }
@@ -326,7 +335,7 @@ void WolfLinkSwimming::replaceWolfSwimUp(ModContext*, void* args, void* retval, 
 
 // allows wolf link's tail and spine to also be rotated vertically while swimming
 HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retval, void*) {
-    if (false) {  // todo: replace with config check later 
+    if (!Config::getWolfLinkSwimming()) {
         return HOOK_CONTINUE;
     }
 
@@ -454,6 +463,9 @@ HookAction WolfLinkSwimming::preJointControl(ModContext*, void* args, void* retv
 }
 
 void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void*) {
+    if (!Config::getWolfLinkSwimming()) {
+        return;
+    }
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     // same logic but with vertical rotation instead
     s16* tailAngleX = wolfTailAngleX;
@@ -489,7 +501,7 @@ void WolfLinkSwimming::postSetWolfTailAngle(ModContext*, void* args, void*, void
 HookAction WolfLinkSwimming::preSetWolfFootMatrix(ModContext*, void* args, void*, void*) {
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
 
-    if (false) {  // todo: replace with config check later
+    if (!Config::getWolfLinkSwimming()) {
         return HOOK_CONTINUE;
     }
 

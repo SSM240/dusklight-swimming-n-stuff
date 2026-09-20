@@ -3,11 +3,14 @@
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
 #include "mods/svc/log.hpp"
+#include "mods/svc/config.h"
+#include "mods/svc/ui.h"
 #include "util.h"
 #include "airMeter.h"
 #include "audio.h"
 #include "bubbles.h"
 #include "camera.h"
+#include "config.h"
 #include "graphics.h"
 #include "wolfLinkSwimming.h"
 
@@ -15,6 +18,8 @@ DEFINE_MOD();
 
 IMPORT_SERVICE(LogService, svc_log);
 IMPORT_SERVICE(HookService, svc_hook);
+IMPORT_SERVICE(ConfigService, svc_config);
+IMPORT_SERVICE(UiService, svc_ui);
 
 std::string Util::currName = "";
 
@@ -26,6 +31,7 @@ MOD_EXPORT ModResult mod_initialize(ModError*) {
     INIT(Audio);
     INIT(Bubbles);
     INIT(Camera);
+    INIT(Config);
     INIT(Graphics);
     INIT(WolfLinkSwimming);
 

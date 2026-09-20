@@ -18,6 +18,7 @@ add_mod(swimming_n_stuff
             src/audio.cpp
             src/bubbles.cpp
             src/camera.cpp
+            src/config.cpp
             src/graphics.cpp
             src/wolfLinkSwimming.cpp
         MOD_JSON mod.json
