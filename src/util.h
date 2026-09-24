@@ -1,4 +1,5 @@
 #pragma once
+#include "config.h"
 #include <string>
 #include "mods/api.h"
 #include "mods/svc/log.hpp"

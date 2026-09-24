@@ -1,4 +1,5 @@
 #include "audio.h"
+#include "config.h"
 #include "util.h"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
@@ -26,7 +27,7 @@ ModResult Audio::init()
 // so pretend it's never actually playing so the retry prompt comes up faster
 HookAction Audio::preCheckBgmIDPlaying(ModContext*, void* args, void* retval, void*)
 {
-    if (false) {  // replace with config check later
+    if (!Config::getFasterGameOver()) {
         return HOOK_CONTINUE;
     }
 

@@ -1,4 +1,5 @@
 #include "airMeter.h"
+#include "config.h"
 #include "util.h"
 #include "mods/svc/hook.h"
 #include "mods/svc/hook.hpp"
@@ -27,8 +28,7 @@ ModResult AirMeter::init() {
 ModResult AirMeter::update() {
     // put in update cus it looks like the game sometimes resets it? maybe?
     // idk for sure but no real reason not to
-    // TODO: config
-    dComIfGp_setMaxOxygen(1200);
+    dComIfGp_setMaxOxygen(Config::getMaxOxygen() * 30);
 
     // todo: config
     if (mDoCPd_c::getHoldR(PAD_1)) {

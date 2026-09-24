@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "config.h"
 #include "util.h"
 #include "mods/svc/hook.h"
 #include "mods/svc/log.h"
@@ -21,9 +22,11 @@ ModResult Camera::init() {
 }
 
 void Camera::postLinkProcCoDead(ModContext*, void* args, void*, void*) {
+    if (!Config::getKeepCameraOnDeath()) {
+        return;
+    }
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     // prevent camera from changing on death
-    // todo: config
     player->mProcVar3.field_0x300e = 0;
     forceAllowCameraControl = true;
 }

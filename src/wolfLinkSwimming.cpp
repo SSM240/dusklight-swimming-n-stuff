@@ -67,7 +67,9 @@ float WolfLinkSwimming::getSwimAnimSpeedMult(daAlink_c* player) {
 void WolfLinkSwimming::doWolfLinkSwimMovement(daAlink_c* player) {
 
     bool holdingSinkButton = mDoCPd_c::getHoldB(PAD_1);
-    bool holdingRiseButton = mDoCPd_c::getHoldY(PAD_1);
+    bool holdingRiseButton = Config::getUseYToSwim()
+        ? mDoCPd_c::getHoldY(PAD_1)
+        : mDoCPd_c::getHoldA(PAD_1);
 
     swimSinking = swimRising = false;
 
