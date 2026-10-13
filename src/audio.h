@@ -5,15 +5,18 @@
 #include "d/actor/d_a_alink.h"
 #include "d/d_menu_save.h"
 #include "Z2AudioLib/Z2SeqMgr.h"
+#include "Z2AudioLib/Z2SeMgr.h"
 #include "types.h"
 
 namespace Audio
 {
 DEFINE_HOOK(&Z2SeqMgr::checkBgmIDPlaying, HookCheckBgmIDPlaying);
 DEFINE_HOOK(&daAlink_c::voiceStart, HookVoiceStart);
+DEFINE_HOOK(&Z2SeMgr::seStartLevel, HookSEStartLevel);
 
 ModResult init();
 
 HookAction preCheckBgmIDPlaying(ModContext*, void* args, void* retval, void*);
 HookAction preVoiceStart(ModContext*, void* args, void*, void*);
+HookAction preSeStartLevel(ModContext*, void* args, void* retval, void*);
 }

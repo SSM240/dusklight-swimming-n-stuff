@@ -11,7 +11,6 @@
 namespace AirMeter
 {
 DEFINE_HOOK(&dMeter2Draw_c::drawKanteraScreen, HookDrawKanteraScreen);
-DEFINE_HOOK(&Z2SeMgr::seStartLevel, HookSEStartLevel);
 
 static int prevMaxOxygen;
 
@@ -20,6 +19,5 @@ ModResult update();
 
 HookAction preDrawKanteraScreen(ModContext*, void* args, void*, void*);
 void postDrawKanteraScreen(ModContext*, void*, void*, void*);
-HookAction preSeStartLevel(ModContext*, void* args, void* retval, void*);
 
 }

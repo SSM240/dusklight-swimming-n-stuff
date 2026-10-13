@@ -11,6 +11,10 @@ static ConfigVarHandle maxOxygenHandle;
 static ConfigVarHandle useYHandle;
 static ConfigVarHandle keepCameraOnDeathHandle;
 static ConfigVarHandle fasterGameOverHandle;
+static ConfigVarHandle disableBloopHandle;
+static ConfigVarHandle holdRToBubbleHandle;
+static ConfigVarHandle dynamicBubblesHandle;
+static ConfigVarHandle wolfLinkBubblesHandle;
 
 static void addControl(UiElementHandle pane, const UiControlDesc& desc) {
     svc_ui->pane_add_control(mod_ctx, pane, &desc, nullptr);
@@ -67,6 +71,18 @@ static ModResult buildSettingsTab(
     control.max = 71582788; // max to prevent overflowing in calcs
     addControl(left, control);
 
+    control = createConfigControl(holdRToBubbleHandle, UI_CONTROL_TOGGLE,
+        "Hold R To Bubble",
+        "Hold the R button underwater to make more bubbles and consume "
+        "air faster."
+        "<br/><br/>"
+        "Requires the \"Dynamic Bubble Frequency\" setting."
+    );
+    control.is_disabled = [](ModContext*, void*) {
+        return !Config::getDynamicBubbles();
+    };
+    addControl(left, control);
+
     control = createConfigControl(keepCameraOnDeathHandle, UI_CONTROL_TOGGLE,
         "Don't Change Camera On Death",
         "Prevents the camera from changing to the cinematic view "
@@ -85,7 +101,28 @@ static ModResult buildSettingsTab(
 
     svc_ui->pane_add_section(mod_ctx, left, "Visuals");
 
+    control = createConfigControl(wolfLinkBubblesHandle, UI_CONTROL_TOGGLE,
+        "Wolf Link Makes Bubbles",
+        "Makes Wolf Link emit bubbles underwater."
+    );
+    addControl(left, control);
+
+    control = createConfigControl(dynamicBubblesHandle, UI_CONTROL_TOGGLE,
+        "Dynamic Bubble Frequency",
+        "Makes the player emit bubbles less frequently by default, becoming "
+        "more frequent as oxygen decreases."
+    );
+    addControl(left, control);
+
     svc_ui->pane_add_section(mod_ctx, left, "Audio");
+
+    control = createConfigControl(disableBloopHandle, UI_CONTROL_TOGGLE,
+        "Disable Underwater Bloop Sound",
+        "Disables the constant sound effect for oxygen decreasing."
+        "<br/><br/>"
+        "Still plays warning sounds at low air."
+    );
+    addControl(left, control);
 
     return MOD_OK;
 }
@@ -165,6 +202,10 @@ ModResult Config::init() {
     registerBoolOption("useYToSwim", false, useYHandle);
     registerBoolOption("keepCameraOnDeath", false, keepCameraOnDeathHandle);
     registerBoolOption("fasterGameOver", false, fasterGameOverHandle);
+    registerBoolOption("holdRToBubble", false, holdRToBubbleHandle);
+    registerBoolOption("dynamicBubbleFrequency", true, dynamicBubblesHandle);
+    registerBoolOption("wolfLinkBubbles", true, wolfLinkBubblesHandle);
+    registerBoolOption("disableBloopSound", false, disableBloopHandle);
 
     UiModsPanelDesc panelDesc = UI_MODS_PANEL_DESC_INIT;
     panelDesc.build = buildModPanel;
@@ -178,3 +219,9 @@ s32 Config::getMaxOxygen() { return (s32)getInt(maxOxygenHandle); }
 bool Config::getUseYToSwim() { return getBool(useYHandle); }
 bool Config::getKeepCameraOnDeath() { return getBool(keepCameraOnDeathHandle); }
 bool Config::getFasterGameOver() { return getBool(fasterGameOverHandle); }
+bool Config::getDynamicBubbles() { return getBool(dynamicBubblesHandle); }
+bool Config::getHoldRToBubble() { 
+    return Config::getDynamicBubbles() && getBool(holdRToBubbleHandle);
+}
+bool Config::getWolfLinkBubbles() { return getBool(wolfLinkBubblesHandle); }
+bool Config::getDisableBloop() { return getBool(disableBloopHandle); }

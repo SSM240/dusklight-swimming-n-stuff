@@ -12,7 +12,6 @@
 #include "d/d_com_inf_game.h"
 #include "types.h"
 #include "m_Do/m_Do_controller_pad.h"
-#include "JSystem/JAudio2/JAISound.h"
 #include "SSystem/SComponent/c_lib.h"
 
 ModResult AirMeter::init() {
@@ -20,7 +19,6 @@ ModResult AirMeter::init() {
 
     PRE_HOOK(HookDrawKanteraScreen, preDrawKanteraScreen);
     POST_HOOK(HookDrawKanteraScreen, postDrawKanteraScreen);
-    PRE_HOOK(HookSEStartLevel, preSeStartLevel);
 
     return MOD_OK;
 }
@@ -29,11 +27,6 @@ ModResult AirMeter::update() {
     // put in update cus it looks like the game sometimes resets it? maybe?
     // idk for sure but no real reason not to
     dComIfGp_setMaxOxygen(Config::getMaxOxygen() * 30);
-
-    // todo: config
-    if (mDoCPd_c::getHoldR(PAD_1)) {
-        dComIfGp_setOxygen(dComIfGp_getOxygen() - 2);
-    }
 
     return MOD_OK;
 }
@@ -58,12 +51,3 @@ void AirMeter::postDrawKanteraScreen(ModContext*, void*, void*, void*) {
     dComIfGp_setMaxOxygen(prevMaxOxygen);
 }
 
-// disable annoying "bloop" sound effect
-HookAction AirMeter::preSeStartLevel(ModContext*, void* args, void* retval, void*) {
-    JAISoundID soundID = mods::arg<JAISoundID>(args, 1);
-    if (soundID == Z2SE_SWIM_TIMER_DEC) { // todo: config?
-        *static_cast<bool*>(retval) = false;
-        return HOOK_SKIP_ORIGINAL;
-    }
-    return HOOK_CONTINUE;
-}

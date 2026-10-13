@@ -14,5 +14,9 @@ s32 getMaxOxygen();
 bool getUseYToSwim();
 bool getKeepCameraOnDeath();
 bool getFasterGameOver();
+bool getHoldRToBubble();
+bool getWolfLinkBubbles();
+bool getDynamicBubbles();
+bool getDisableBloop();
 
 }

@@ -34,6 +34,12 @@ ModResult Bubbles::update() {
 
     daAlink_c* player = daAlink_getAlinkActorClass();
 
+    // also put this here for convenience
+    if (Config::getHoldRToBubble() && mDoCPd_c::getHoldR(PAD_1)
+        && dComIfGp_getOxygen() < dComIfGp_getMaxOxygen()) {
+        dComIfGp_setOxygen(dComIfGp_getOxygen() - 2);
+    }
+
     // gradually taper off bubble frequency when player dies
     if (player && player->mProcID == daAlink_c::PROC_DEAD) {
         deathTimer++;
@@ -43,7 +49,7 @@ ModResult Bubbles::update() {
     }
     else {
         deathTimer = 0;
-        if (mDoCPd_c::getHoldR(PAD_1)) {  // todo: config
+        if (Config::getHoldRToBubble() && mDoCPd_c::getHoldR(PAD_1)) {
             bubbleFrequency = 1.0f;
         }
         else if (oxygenPercent > 0.5f) {
@@ -59,6 +65,9 @@ ModResult Bubbles::update() {
 
 
 HookAction Bubbles::preSetEmitterPolyColor(ModContext*, void* args, void* retval, void*) {
+    if (!Config::getDynamicBubbles()) {
+        return HOOK_CONTINUE;
+    }
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     u16 i_effName = mods::arg<u16>(args, 2);
     if (i_effName != ID_ZI_J_LK_ABUKU_A) {
@@ -72,6 +81,9 @@ HookAction Bubbles::preSetEmitterPolyColor(ModContext*, void* args, void* retval
 }
 
 void Bubbles::postSetEffect(ModContext*, void* args, void* retval, void*) {
+    if (!Config::getWolfLinkBubbles()) {
+        return;
+    }
     daAlink_c* player = mods::arg<daAlink_c*>(args, 0);
     // spawn bubble particles as normal if you're wolf link
     if (player->checkWolf()) {

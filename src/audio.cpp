@@ -12,6 +12,7 @@
 #include "Z2AudioLib/Z2AudioMgr.h"
 #include "Z2AudioLib/Z2SeqMgr.h"
 #include "Z2AudioLib/Z2SeMgr.h"
+#include "JSystem/JAudio2/JAISound.h"
 
 ModResult Audio::init()
 {
@@ -19,6 +20,7 @@ ModResult Audio::init()
 
     PRE_HOOK(HookCheckBgmIDPlaying, preCheckBgmIDPlaying);
     PRE_HOOK(HookVoiceStart, preVoiceStart);
+    PRE_HOOK(HookSEStartLevel, preSeStartLevel);
 
     return MOD_OK;
 }
@@ -57,5 +59,15 @@ HookAction Audio::preVoiceStart(ModContext*, void* args, void*, void*)
         return HOOK_SKIP_ORIGINAL;
     }
 
+    return HOOK_CONTINUE;
+}
+
+// disable annoying "bloop" sound effect
+HookAction Audio::preSeStartLevel(ModContext*, void* args, void* retval, void*) {
+    JAISoundID soundID = mods::arg<JAISoundID>(args, 1);
+    if (Config::getDisableBloop() && soundID == Z2SE_SWIM_TIMER_DEC) {
+        *static_cast<bool*>(retval) = false;
+        return HOOK_SKIP_ORIGINAL;
+    }
     return HOOK_CONTINUE;
 }
